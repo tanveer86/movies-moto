@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
+const {genreSchema} = require('./genres');
+const {celebritySchema} = require('./celebrities');
 
 const Movie = mongoose.model('Movies', new mongoose.Schema({
     title: {
@@ -15,10 +17,8 @@ const Movie = mongoose.model('Movies', new mongoose.Schema({
         maxlength: 10,
     },
     genre: {
-        type: String,
-        required: true,
-        minlength: 1,
-        maxlength: 100
+        type: genreSchema,
+        required: true
     },
     poster: {
         type: String,
@@ -36,22 +36,16 @@ const Movie = mongoose.model('Movies', new mongoose.Schema({
         maxlength: 2000
     },
     director: {
-        type: String,
-        required: true,
-        minlength: 1,
-        maxlength: 100
+        type: Array,
+        required: true
     },
     writers: {
-        type: String,
-        required: true,
-        minlength: 1,
-        maxlength: 100
+        type: Array,
+        required: true
     },
     cast: {
-        type: String,
-        required: true,
-        minlength: 1,
-        maxlength: 100
+        type: Array,
+        required: true
     }
 }));
 
@@ -59,12 +53,12 @@ function validateMovie(movieData) {
     let schema = {
         title: Joi.string().min(1).max(200).required(),
         releaseDate: Joi.string().min(1).max(10).required(),
-        genre: Joi.string().min(1).max(100).required(),
+        genreId: Joi.string().required(),
         poster: Joi.string().min(1).max(1000),
         story: Joi.string().min(1).max(2000),
-        director: Joi.string().min(1).max(100).required(),
-        writers: Joi.string().min(1).max(100).required(),
-        cast: Joi.string().min(1).max(100).required()
+        director: Joi.array().required(),
+        writers: Joi.array().required(),
+        cast: Joi.array().required()
 
     }
 

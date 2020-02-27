@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const Celebrity = mongoose.model('Celebrities', new mongoose.Schema({
+const celebritySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -29,7 +29,9 @@ const Celebrity = mongoose.model('Celebrities', new mongoose.Schema({
         minlength: 1,
         maxlength: 10000
     }
-}));
+});
+
+const Celebrity = mongoose.model('Celebrities', celebritySchema);
 
 function validateCelebrity(celebData) {
     let schema = {
@@ -43,5 +45,6 @@ function validateCelebrity(celebData) {
     return Joi.validate(celebData, schema);
 }
 
+exports.celebritySchema = celebritySchema;
 exports.Celebrity = Celebrity;
 exports.validate = validateCelebrity;

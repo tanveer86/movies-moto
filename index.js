@@ -14,5 +14,6 @@ app.use(express.json());
 app.use('/api/movies', movies);
 app.use('/api/celebrities', celebrities);
 app.use('/api/genres', genres);
+app.use(express.json());
 
 app.listen(5000, () => console.log('server started running now!'));

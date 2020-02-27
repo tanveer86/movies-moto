@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const {Movie, validate} = require('../models/movies');
+const {Genre} = require('../models/genres');
+const {Celebrity} = require('../models/celebrities');
 const router = express.Router();
 
 router.get('/', async (request, response) => {
@@ -11,17 +13,53 @@ router.get('/', async (request, response) => {
 
 router.post('/', async (request, response) => {
     let {error} = validate(request.body);
-    if(error) return response.send(error.details[0].message);
+    if(error) return response.json(error.details[0].message);
+
+    let genre = await Genre.findById(request.body.genreId);
+    if(!genre) return response.json('invalid genre id provided');
+
+    let directorList = []
+    let writersList = []
+    let castList = []
+
+    for(let i = 0; i < request.body.director.length; i++){
+        if(await Celebrity.findById(request.body.director[i])){
+            directorList.push(request.body.director[i]);
+        }else{
+            return response.json('invalid direcdtor id provided');
+            break;
+        } 
+    }
+
+    for(let i = 0; i < request.body.writers.length; i++){
+        if(await Celebrity.findById(request.body.writers[i])){
+            writersList.push(request.body.writers[i]);
+        }else{
+            return response.json('invalid writer id provided');
+            break;
+        }
+    }
+
+    for(let i = 0; i < request.body.cast.length; i++){
+        if(await Celebrity.findById(request.body.cast[i].id)){
+            castList.push(request.body.cast[i]);
+        }else{
+            return response.json('invalid cast id provided');
+            break;
+        }
+    }
 
     let addMovie = new Movie({
         title: request.body.title,
         releaseDate: request.body.releaseDate,
-        genre: request.body.genre,
+        genre: {
+            _id: genre._id
+        },
         poster: request.body.poster,
         story: request.body.story,
-        director: request.body.director,
-        writers: request.body.writers,
-        cast: request.body.cast
+        director: directorList,
+        writers: writersList,
+        cast: castList
     });
 
     let movieAdded = await addMovie.save();
@@ -42,7 +80,7 @@ router.put('/:id', async (request, response) => {
     let updateMovie = await Movie.findByIdAndUpdate(request.params.id, {
         title: request.body.title,
         releaseDate: request.body.releaseDate,
-        genre: request.body.genre,
+        genreId: request.body.genreId,
         poster: request.body.poster,
         story: request.body.story,
         director: request.body.director,

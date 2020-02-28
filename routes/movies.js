@@ -4,6 +4,8 @@ const {Movie, validate} = require('../models/movies');
 const {Genre} = require('../models/genres');
 const {Celebrity} = require('../models/celebrities');
 const router = express.Router();
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 router.get('/', async (request, response) => {
     let allMovies = await Movie.find();
@@ -11,7 +13,7 @@ router.get('/', async (request, response) => {
     response.send(allMovies)
 });
 
-router.post('/', async (request, response) => {
+router.post('/', auth, async (request, response) => {
     let {error} = validate(request.body);
     if(error) return response.json(error.details[0].message);
 

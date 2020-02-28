@@ -95,11 +95,11 @@ router.put('/:id', async (request, response) => {
 
 });
 
-router.delete('/:id', async (request, response) => {
+router.delete('/:id', [auth, admin], async (request, response) => {
     let movieDeleted = await Movie.findByIdAndRemove(request.params.id);
     if(!movieDeleted) return response.send('invalid movie id provided!');
 
     response.send('the movie has been deleted from the database!')
-})
+});
 
 module.exports = router;
